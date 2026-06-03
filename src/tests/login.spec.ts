@@ -16,7 +16,7 @@ test(
 });
 
 /*
- * [Login]&#58; Verify successful login with valid credentials
+ * [Login]: Verify successful login with valid credentials
  */
 test(
   "Verify successful login with valid credentials",
