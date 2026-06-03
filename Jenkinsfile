@@ -6,6 +6,12 @@ pipeline {
         nodejs "NodeJS20"
     }
 
+    environment {
+        BASE_URL = "https://demowebshop.tricentis.com"
+        EMAIL = "test+20@gmail.com"
+        PASSWORD = "Test@123"
+    }
+
     stages {
 
         stage('Install Dependencies') {
