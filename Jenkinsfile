@@ -1,13 +1,12 @@
 pipeline {
+
     agent any
 
-    stages {
+    tools {
+        nodejs "NodeJS20"
+    }
 
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+    stages {
 
         stage('Install Dependencies') {
             steps {
@@ -26,11 +25,13 @@ pipeline {
                 sh 'npx playwright test'
             }
         }
+
     }
 
     post {
         always {
-            archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'playwright-report/**/*', fingerprint: true
+            archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
         }
     }
 }
