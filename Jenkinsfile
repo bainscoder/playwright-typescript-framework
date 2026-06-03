@@ -37,7 +37,16 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: 'playwright-report/**/*', fingerprint: true
-            archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
-        }
+
+        archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
+
+        publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'Playwright Report'
+        ])
     }
 }
