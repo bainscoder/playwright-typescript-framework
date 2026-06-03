@@ -18,7 +18,7 @@ test(
 /*
  * [Login]&#58; Verify successful login with valid credentials
  */
-test.only(
+test(
   "Verify successful login with valid credentials",
   async ({ login }) => {
   await login.loginWithValidCredentials();
