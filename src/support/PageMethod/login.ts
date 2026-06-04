@@ -46,4 +46,17 @@ export class LoginPage {
     await clickWebElement(this.loginButton);
     await visibilityOfElement(this.logoutLink);
   }
+
+  async isUserLoggedIn(): Promise<boolean> {
+  try {
+    return await this.logoutLink.isVisible({ timeout: 5000 });
+  } catch {
+    return false;
+  }
+}
+
+  async reAuthenticate() {
+    await this.navigateToLoginPage();
+    await this.loginWithValidCredentials();
+}
 }

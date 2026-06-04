@@ -13,6 +13,7 @@ export class ElectronicsPage {
   }
 
   async navigateToElectronicsPage() {
+  await this.page.goto("/");
   const responsePromise = validateApiResponse(this.page,"/electronics");
   await clickWebElement(this.electronicsTab);
   await responsePromise;

@@ -1,6 +1,7 @@
 import { test as baseTest, Page } from "@playwright/test";
 import { LoginPage } from "../PageMethod/login";
 import { ElectronicsPage } from "../PageMethod/electronics";
+import { ensureAuthenticated } from "../Utils/authUtils";
 
 type Fixtures = {
   page: Page;
@@ -15,10 +16,11 @@ const test = baseTest.extend<Fixtures>({
   },
 
   electronics: async ({ page }, use) => {
+    await ensureAuthenticated(page);
     const electronicsPage = new ElectronicsPage(page);
     await use(electronicsPage);
   },
-});
 
+});
 
 export default test;

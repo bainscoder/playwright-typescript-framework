@@ -15,12 +15,4 @@ test(
   await login.loginWithoutCredentials();
 });
 
-/*
- * [Login]: Verify successful login with valid credentials
- */
-test(
-  "Verify successful login with valid credentials",
-  async ({ login }) => {
-  await login.loginWithValidCredentials();
-  });
 });
