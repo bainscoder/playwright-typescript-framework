@@ -4,7 +4,7 @@ test.describe("Electronics Navigation Test Cases", () => {
     await electronics.navigateToElectronicsPage();
   });
 
-test("Verify complete checkout process", async ({ electronics, cart }) => {
+  test("Verify complete checkout process", async ({ electronics, cart }) => {
     await cart.clearCart();
     await electronics.openCellPhonesCategory();
     await electronics.openFirstProduct();
@@ -16,7 +16,10 @@ test("Verify complete checkout process", async ({ electronics, cart }) => {
     await cart.completeCheckout();
   });
 
-  test("Verify cart total updates when quantity changes", async ({ electronics, cart }) => {
+  test("Verify cart total updates when quantity changes", async ({
+    electronics,
+    cart,
+  }) => {
     await electronics.openCellPhonesCategory();
     await electronics.openFirstProduct();
     const productPrice = await electronics.getProductPrice();
@@ -25,5 +28,4 @@ test("Verify complete checkout process", async ({ electronics, cart }) => {
     await cart.updateProductQuantity(2);
     await cart.verifyCartTotal(productPrice * 2);
   });
-
 });

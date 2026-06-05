@@ -25,7 +25,7 @@ export class LoginPage {
     this.loginButton = page.getByRole("button", { name: "Log in" });
     this.errorMessage = page.getByText(data.errorMessageOnLogin);
     this.emailField = page.locator("#Email");
-    this.passwordField = page.locator("#Password")
+    this.passwordField = page.locator("#Password");
     this.logoutLink = page.getByText(data.logoutText);
   }
 
@@ -48,15 +48,15 @@ export class LoginPage {
   }
 
   async isUserLoggedIn(): Promise<boolean> {
-  try {
-    return await this.logoutLink.isVisible({ timeout: 5000 });
-  } catch {
-    return false;
+    try {
+      return await this.logoutLink.isVisible({ timeout: 5000 });
+    } catch {
+      return false;
+    }
   }
-}
 
   async reAuthenticate() {
     await this.navigateToLoginPage();
     await this.loginWithValidCredentials();
-}
+  }
 }

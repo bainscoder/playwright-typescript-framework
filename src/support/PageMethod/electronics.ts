@@ -3,7 +3,6 @@ import { clickWebElement } from "../Utils/generalPlaywrightMethods";
 import { validateApiResponse } from "../Utils/apiUtils";
 
 export class ElectronicsPage {
-
   private readonly page: Page;
   private readonly electronicsTab: Locator;
   private readonly cellPhonesCategory: Locator;
@@ -13,13 +12,18 @@ export class ElectronicsPage {
   private readonly successNotification: Locator;
 
   constructor(page: Page) {
-
     this.page = page;
-    this.electronicsTab = page.getByRole("link", {name: "Electronics",}).first();
-    this.cellPhonesCategory = page.locator(".sub-category-grid .item-box .title").last();
+    this.electronicsTab = page
+      .getByRole("link", { name: "Electronics" })
+      .first();
+    this.cellPhonesCategory = page
+      .locator(".sub-category-grid .item-box .title")
+      .last();
     this.firstProduct = page.locator(".product-item .product-title a").first();
     this.productPrice = page.locator('[itemprop="price"]');
-    this.addToCartButton = page.getByRole("button", {name: "Add to cart",}).first();
+    this.addToCartButton = page
+      .getByRole("button", { name: "Add to cart" })
+      .first();
     this.successNotification = page.locator(".content");
   }
 
@@ -39,7 +43,7 @@ export class ElectronicsPage {
    */
   async openCellPhonesCategory(): Promise<void> {
     await this.navigateToElectronicsPage();
-    const responsePromise = validateApiResponse(this.page,"/cell-phones");
+    const responsePromise = validateApiResponse(this.page, "/cell-phones");
     await clickWebElement(this.cellPhonesCategory);
     await responsePromise;
     await expect(this.page).toHaveURL(/cell-phones/);
@@ -58,9 +62,7 @@ export class ElectronicsPage {
    */
   async getProductPrice(): Promise<number> {
     const priceText = await this.productPrice.textContent();
-    return Number(
-      priceText?.replace("$", "").trim()
-    );
+    return Number(priceText?.replace("$", "").trim());
   }
 
   /**
@@ -68,7 +70,9 @@ export class ElectronicsPage {
    */
   async addFirstProductToCart(): Promise<void> {
     await clickWebElement(this.addToCartButton);
-    await expect(this.successNotification).toContainText("The product has been added to your shopping cart");
+    await expect(this.successNotification).toContainText(
+      "The product has been added to your shopping cart",
+    );
   }
 
   /**
@@ -79,20 +83,20 @@ export class ElectronicsPage {
   }
 
   /*
- * Network logger utility used only for API discovery/debugging.
- * It captures all network requests triggered after user actions
- * to identify the actual API endpoint for validation.
- *
- * Commented out because it is not required for regular execution
- * and may generate unnecessary logs in reports/terminal output.
- * Enable only while identifying APIs.
- */
-//   async navigateToElectronicsPage() {
-//     captureNetworkLogs(this.page,{
-//       ignoreStaticFiles:true
-//    });
-//    await clickWebElement(
-//       this.electronicsTab
-//    );
-//}
+   * Network logger utility used only for API discovery/debugging.
+   * It captures all network requests triggered after user actions
+   * to identify the actual API endpoint for validation.
+   *
+   * Commented out because it is not required for regular execution
+   * and may generate unnecessary logs in reports/terminal output.
+   * Enable only while identifying APIs.
+   */
+  //   async navigateToElectronicsPage() {
+  //     captureNetworkLogs(this.page,{
+  //       ignoreStaticFiles:true
+  //    });
+  //    await clickWebElement(
+  //       this.electronicsTab
+  //    );
+  //}
 }

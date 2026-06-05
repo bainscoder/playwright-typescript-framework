@@ -29,10 +29,9 @@ const test = baseTest.extend<Fixtures>({
     await use(cartPage);
   },
   home: async ({ page }, use) => {
-  const homePage = new HomePage(page);
-  await use(homePage);
-},
-
+    const homePage = new HomePage(page);
+    await use(homePage);
+  },
 });
 
 export default test;
