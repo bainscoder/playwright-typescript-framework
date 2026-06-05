@@ -144,20 +144,6 @@ async verifyCheckoutFromCart(){
   await expect(this.page).toHaveURL(/onepagecheckout/);
   }
 
-/**
-  * Fill Billing Address
-  */
-// async fillBillingAddressForm() {
-// await this.countryDropdown.selectOption({label: "India"});
-// const address = FakerUtils.generateBillingAddress();
-// await this.cityInput.fill(address.city);
-// await this.address1Input.fill(address.address1);
-// await this.zipCodeInput.fill(address.zipCode);
-// await this.phoneNumberInput.fill(address.phoneNumber);
-// await this.continueButton.click();
-
-// }
-
 async completeCheckout(): Promise<void> {
 const address = FakerUtils.generateBillingAddress();
   // Billing Address
