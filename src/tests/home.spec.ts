@@ -48,5 +48,4 @@ test.describe("Home Page Test Cases", () => {
     await home.searchProduct("a");
     await home.verifySearchValidationMessage();
   });
-  
 });
