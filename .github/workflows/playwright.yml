@@ -84,14 +84,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 jobs:
-
   test:
-
     runs-on: ubuntu-latest
 
     env:
@@ -100,9 +98,15 @@ jobs:
       PASSWORD: ${{ secrets.PASSWORD }}
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Checkout History Branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-dashboard
+          path: history
+        continue-on-error: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -119,22 +123,25 @@ jobs:
         run: |
           mkdir -p execution-data
 
-          curl -L \
-          https://bainscoder.github.io/playwright-typescript-framework/dashboard/execution-history.json \
-          -o execution-data/execution-history.json \
-          || echo "No previous history found"
+          if [ -f history/execution-data/execution-history.json ]; then
+            cp history/execution-data/execution-history.json execution-data/
+            echo "Previous history restored"
+          else
+            echo "No previous history found"
+          fi
+
+      - name: Verify Restored History
+        run: |
+          echo "===== HISTORY ====="
+
+          if [ -f execution-data/execution-history.json ]; then
+            cat execution-data/execution-history.json
+          else
+            echo "History file missing"
+          fi
 
       - name: Run Playwright Tests
         run: npx playwright test
-
-      - name: Debug Dashboard Files
-        if: always()
-        run: |
-          echo "===== PLAYWRIGHT REPORT ====="
-          find playwright-report -type f || true
-          echo ""
-          echo "===== EXECUTION DATA ====="
-          find execution-data -type f || true
 
       - name: Verify Generated Files
         if: always()
@@ -146,6 +153,28 @@ jobs:
           echo "===== PLAYWRIGHT REPORT ====="
           ls -la playwright-report || true
 
+      - name: Save Updated History
+        if: always()
+        run: |
+          mkdir -p history/execution-data
+
+          if [ -f execution-data/execution-history.json ]; then
+            cp execution-data/execution-history.json history/execution-data/
+
+            cd history
+
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+
+            git add execution-data/execution-history.json
+
+            git commit -m "Update execution history" || echo "No changes"
+
+            git push origin gh-dashboard
+          else
+            echo "execution-history.json not found"
+          fi
+
       - name: Create Site Structure
         if: always()
         run: |
@@ -153,14 +182,7 @@ jobs:
           mkdir -p site/dashboard
 
           cp -R playwright-report/* site/playwright/
-
-          cp execution-data/execution-dashboard.html site/dashboard/
-
           cp -R execution-data/* site/dashboard/
-
-      - name: Debug Files
-        run: |
-          find execution-data -type f
 
       - name: Create Home Page
         if: always()
@@ -172,7 +194,6 @@ jobs:
               <title>Playwright Automation Reports</title>
           </head>
           <body>
-
               <h1>Playwright Automation Reports</h1>
 
               <ul>
@@ -207,9 +228,7 @@ jobs:
           path: playwright-report
 
   deploy:
-
     needs: test
-
     runs-on: ubuntu-latest
 
     environment:
@@ -220,7 +239,6 @@ jobs:
       id-token: write
 
     steps:
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
