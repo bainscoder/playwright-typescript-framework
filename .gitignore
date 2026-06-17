@@ -9,5 +9,3 @@ node_modules/
 .env
 .DS_Store
 src/auth/user.json
-execution-data/*.json
-execution-data/*.html
