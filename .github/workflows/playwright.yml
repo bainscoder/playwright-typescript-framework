@@ -1,3 +1,75 @@
+# name: Playwright Tests
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+
+#     env:
+#       BASE_URL: ${{ secrets.BASE_URL }}
+#       EMAIL: ${{ secrets.EMAIL }}
+#       PASSWORD: ${{ secrets.PASSWORD }}
+
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 20
+
+#       - name: Install Dependencies
+#         run: npm ci
+
+#       - name: Install Playwright Browsers
+#         run: npx playwright install --with-deps
+
+#       - name: Restore Previous Execution History 
+#         run: | 
+#           mkdir -p execution-data 
+#           curl -L \ 
+#           https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/dashboard/execution-history.json \ -o 
+#           execution-data/execution-history.json \ 
+#           || echo "No previous history found"
+
+#       - name: Run Tests
+#         run: npx playwright test
+
+#       - name: Verify Generated Files 
+#         if: always() 
+#         run: | 
+#           echo "===== EXECUTION DATA =====" 
+#           ls -la execution-data || true 
+#           echo "" 
+#           echo "===== PLAYWRIGHT REPORT =====" 
+#           ls -la playwright-report || true
+
+#       - name: Create Site Structure 
+#         if: always() 
+#         run: | 
+#           mkdir -p site/playwright 
+#           mkdir -p site/dashboard 
+#           cp -R playwright-report/* site/playwright/ 
+#           cp playwright-report/execution-dashboard.html site/dashboard/ 
+#           cp -R execution-data/* site/dashboard/
+
+#       - name: Upload Playwright Report
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: playwright-report
+#           path: playwright-report/
+
+
 name: Playwright Tests
 
 on:
@@ -9,8 +81,17 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
+
   test:
+
     runs-on: ubuntu-latest
 
     env:
@@ -19,7 +100,8 @@ jobs:
       PASSWORD: ${{ secrets.PASSWORD }}
 
     steps:
-      - name: Checkout Code
+
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -33,12 +115,99 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Run Tests
+      - name: Restore Previous Execution History
+        run: |
+          mkdir -p execution-data
+
+          curl -L \
+          https://bainscoder.github.io/playwright-typescript-framework/dashboard/execution-history.json \
+          -o execution-data/execution-history.json \
+          || echo "No previous history found"
+
+      - name: Run Playwright Tests
         run: npx playwright test
 
-      - name: Upload Playwright Report
+      - name: Verify Generated Files
+        if: always()
+        run: |
+          echo "===== EXECUTION DATA ====="
+          ls -la execution-data || true
+
+          echo ""
+          echo "===== PLAYWRIGHT REPORT ====="
+          ls -la playwright-report || true
+
+      - name: Create Site Structure
+        if: always()
+        run: |
+          mkdir -p site/playwright
+          mkdir -p site/dashboard
+
+          cp -R playwright-report/* site/playwright/
+
+          cp playwright-report/execution-dashboard.html site/dashboard/
+
+          cp -R execution-data/* site/dashboard/
+
+      - name: Create Home Page
+        if: always()
+        run: |
+          cat > site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Playwright Automation Reports</title>
+          </head>
+          <body>
+
+              <h1>Playwright Automation Reports</h1>
+
+              <ul>
+                  <li>
+                      <a href="./playwright/index.html">
+                          Playwright Report
+                      </a>
+                  </li>
+
+                  <li>
+                      <a href="./dashboard/execution-dashboard.html">
+                          Execution Dashboard
+                      </a>
+                  </li>
+              </ul>
+
+          </body>
+          </html>
+          EOF
+
+      - name: Upload GitHub Pages Artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Upload Playwright Report Artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: playwright-report
+
+  deploy:
+
+    needs: test
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
