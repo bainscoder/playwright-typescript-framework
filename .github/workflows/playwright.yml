@@ -154,9 +154,13 @@ jobs:
 
           cp -R playwright-report/* site/playwright/
 
-          cp playwright-report/execution-dashboard.html site/dashboard/
+          cp execution-data/execution-dashboard.html site/dashboard/
 
           cp -R execution-data/* site/dashboard/
+
+      - name: Debug Files
+        run: |
+          find execution-data -type f
 
       - name: Create Home Page
         if: always()

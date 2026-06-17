@@ -9,7 +9,7 @@ const logoPath = path.join(
 
 const logoDestination = path.join(
   process.cwd(),
-  'playwright-report',
+  'execution-data',
   'logo.jpeg'
 );
 
@@ -27,7 +27,7 @@ const historyPath = path.join(
 
 const outputPath = path.join(
   process.cwd(),
-  'playwright-report',
+  'execution-data',
   'execution-dashboard.html'
 );
 
