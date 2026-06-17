@@ -127,6 +127,15 @@ jobs:
       - name: Run Playwright Tests
         run: npx playwright test
 
+      - name: Debug Dashboard Files
+        if: always()
+        run: |
+          echo "===== PLAYWRIGHT REPORT ====="
+          find playwright-report -type f || true
+          echo ""
+          echo "===== EXECUTION DATA ====="
+          find execution-data -type f || true
+
       - name: Verify Generated Files
         if: always()
         run: |
